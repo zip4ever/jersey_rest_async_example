@@ -1,10 +1,11 @@
 package com.pluralsight.domain;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
+import java.util.HashMap;
+
 
 /**
  * Created by KDAAU95 on 16/04/2015.
@@ -14,6 +15,8 @@ import java.util.Date;
 @JsonPropertyOrder({"id", "author", "title", "isbn", "publishedDate"})
 // hide non null values from the resultco
 @JsonInclude(JsonInclude.Include.NON_NULL)
+// ignore unknown properties?
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Book {
 
     private String id;
@@ -21,6 +24,9 @@ public class Book {
     private String author;
     private String isbn;
     private Date publishedData;
+
+    // handle extra paramaters, see also the specific getters and setters which are annotated
+    private HashMap<String, Object> extras = new HashMap<>();
 
     public Book() {
 
@@ -83,5 +89,15 @@ public class Book {
 
     public String toString() {
         return "id=" + id + "\ttitle=" + title + "\tauthor=" + author + "\tisbn=" + isbn + "\tpublishedDate" + publishedData;
+    }
+
+    @JsonAnyGetter
+    public HashMap<String, Object> getExtras() {
+        return extras;
+    }
+
+    @JsonAnySetter
+    public void set(String key, Object value) {
+        this.extras.put(key, value);
     }
 }

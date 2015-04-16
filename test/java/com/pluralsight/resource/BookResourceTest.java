@@ -16,6 +16,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Objects;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -43,6 +46,23 @@ public class BookResourceTest extends JerseyTest {
         for(int i=0; i<10; i++) {
             bookDao.addBook(new Book("Title " + i, "Author " + i, "" + i*1000000));
         }
+    }
+
+    // method to force we can add extra elements
+    protected Response addBook(String author, String title, Date publishedDate, String isbn, String... extras) {
+        HashMap<String, Object> book = new HashMap<>();
+        book.put("author", author);
+        book.put("title", title);
+        book.put("publishedDate", publishedDate);
+        book.put("isbn", isbn);
+        if( extras != null ) {
+            int count = 0;
+            for(String extra : extras) {
+                book.put("extra " + count++, extra );
+            }
+        }
+        Entity<HashMap<String, Object>> bookEntity = Entity.entity(book, MediaType.APPLICATION_JSON_TYPE);
+        return target("books/async").request().post(bookEntity);
     }
 
     @Before
@@ -118,5 +138,12 @@ public class BookResourceTest extends JerseyTest {
 
         Book returnedBook = response.readEntity(Book.class);
         assertNotNull("Book should have an id when persisted", returnedBook.getId());
+    }
+
+    @Test
+    public void  testAddExtraField() throws Exception{
+        // see @JsonIgnoreProperties(ignoreUnknown = true) in Book to enforce acceptance !!!
+        Response response = addBook("author", "title", new Date(), "1111", "Hello World");
+        assertEquals(200, response.getStatus());
     }
 }
