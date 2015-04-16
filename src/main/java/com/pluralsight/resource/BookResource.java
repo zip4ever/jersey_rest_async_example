@@ -4,10 +4,7 @@ import com.pluralsight.domain.Book;
 import com.pluralsight.repository.BookDao;
 import com.pluralsight.repository.BookDaoStubImpl;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.awt.*;
@@ -39,5 +36,10 @@ public class BookResource {
         return bookDao.getBook(id);
     }
 
-
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Book addBook(Book book) {
+        return bookDao.addBook(book);
+    }
 }

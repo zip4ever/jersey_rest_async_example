@@ -4,21 +4,20 @@ import com.pluralsight.domain.Book;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by KDAAU95 on 16/04/2015.
  */
 public class BookDaoStubImpl implements BookDao {
 
-    private HashMap<String, Book> books;
+    private static long idValue = 0L;
+
+    private Map<String, Book> books;
 
     public BookDaoStubImpl() {
-        books = new HashMap<>();
-        for(int i=0; i<10; i++) {
-            Book book = new Book("Book " + i, "Author " + i, "1234" + i*10000 );
-            book.setId("" + i);
-            books.put(book.getId(), book);
-        }
+        books = new ConcurrentHashMap<>();
     }
 
     public Collection<Book> getBooks() {
@@ -30,4 +29,12 @@ public class BookDaoStubImpl implements BookDao {
         System.out.println("Requested book : " + book.toString());
         return books.get(id);
     }
+
+    public Book addBook(Book book) {
+        idValue++;
+        book.setId("" + idValue);
+        books.put(book.getId(), book);
+        return book;
+    }
+
 }

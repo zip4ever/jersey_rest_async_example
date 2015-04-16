@@ -12,4 +12,6 @@ public interface BookDao {
     Collection<Book> getBooks();
 
     public Book getBook(String id);
+
+    Book addBook(Book book);
 }
