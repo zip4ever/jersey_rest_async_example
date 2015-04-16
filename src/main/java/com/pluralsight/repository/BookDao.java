@@ -14,7 +14,9 @@ public interface BookDao {
 
     public Book getBook(String id);
 
+    ListenableFuture<Book> getBookAsync(final String id);
+
     Book addBook(Book book);
 
-    ListenableFuture<Book> addBookAsynch(final Book book);
+    ListenableFuture<Book> addBookAsync(final Book book);
 }

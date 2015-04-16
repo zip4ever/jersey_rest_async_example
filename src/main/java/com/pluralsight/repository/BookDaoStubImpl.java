@@ -35,6 +35,17 @@ public class BookDaoStubImpl implements BookDao {
         return books.get(id);
     }
 
+    public ListenableFuture<Book> getBookAsync(final String id) {
+       ListenableFuture<Book> future =
+               service.submit(new Callable<Book>() {
+                   @Override
+                   public Book call() throws Exception {
+                       return getBook(id);
+                   }
+               });
+        return future;
+    }
+
     public Book addBook(Book book) {
         idValue++;
         book.setId("" + idValue);
@@ -42,7 +53,7 @@ public class BookDaoStubImpl implements BookDao {
         return book;
     }
 
-    public ListenableFuture<Book> addBookAsynch(final Book book) {
+    public ListenableFuture<Book> addBookAsync(final Book book) {
         ListenableFuture<Book> future =
                 service.submit(new Callable<Book>() {
                     public Book call() throws Exception {

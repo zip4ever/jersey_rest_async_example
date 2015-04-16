@@ -69,6 +69,15 @@ public class BookResourceTest extends JerseyTest {
     }
 
     @Test
+    public void testGetBookAsync() throws Exception {
+        Book response = target("books/async")
+                .path("1")
+                .request()
+                .get(Book.class);
+        assertNotNull("A book with id \"1\" must be found", response);
+    }
+
+    @Test
     public void testSameBookRetrieved() throws Exception {
         Book response1 = target("books")
                 .path("1")

@@ -5,7 +5,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.pluralsight.domain.Book;
 import com.pluralsight.repository.BookDao;
-import com.pluralsight.repository.BookDaoStubImpl;
 import org.glassfish.jersey.server.ManagedAsync;
 
 import javax.ws.rs.*;
@@ -13,7 +12,6 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import java.awt.*;
 import java.util.Collection;
 
 /**
@@ -42,6 +40,26 @@ public class BookResource {
         return bookDao.getBook(id);
     }
 
+    @Path("/async/{id}")
+    @GET
+    @ManagedAsync
+    @Produces(MediaType.APPLICATION_JSON)
+    public void getBookAsynch(@PathParam("id") String id, @Suspended final AsyncResponse response) {
+        System.out.println("getBook with id = " + id);
+        ListenableFuture<Book> bookFuture = bookDao.getBookAsync(id);
+        Futures.addCallback(bookFuture, new FutureCallback<Book>() {
+            @Override
+            public void onSuccess(Book book) {
+                response.resume(book);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                response.resume(throwable);
+            }
+        });
+    }
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -55,7 +73,7 @@ public class BookResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public void addBookAsynch(Book book, @Suspended final AsyncResponse response) {
-        ListenableFuture<Book> bookFuture = bookDao.addBookAsynch(book);
+        ListenableFuture<Book> bookFuture = bookDao.addBookAsync(book);
         Futures.addCallback(bookFuture, new FutureCallback<Book>() {
             @Override
             public void onSuccess(Book book) {
