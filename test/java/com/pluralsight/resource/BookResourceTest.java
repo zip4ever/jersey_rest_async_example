@@ -1,13 +1,10 @@
 package com.pluralsight.resource;
 
 import com.pluralsight.domain.Book;
+import com.pluralsight.application.BookApplication;
 import com.pluralsight.repository.BookDao;
 import com.pluralsight.repository.BookDaoStubImpl;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
-import org.glassfish.jersey.test.TestProperties;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -32,15 +29,8 @@ public class BookResourceTest extends JerseyTest {
         // enable(TestProperties.RECORD_LOG_LEVEL);
         // enable(TestProperties.DUMP_ENTITY);
 
-        return new ResourceConfig()
-                .packages("com.pluralsight")
-                .register(new AbstractBinder() {
-                              @Override
-                              protected void configure() {
-                                bind(bookDao).to(BookDao.class);
-                              }
-                          }
-                );
+        // setup this way so you can easily pass another DAO for the test than the one one production
+        return new BookApplication(bookDao);
     }
 
     @BeforeClass
