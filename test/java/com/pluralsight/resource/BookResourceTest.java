@@ -48,7 +48,7 @@ public class BookResourceTest extends JerseyTest {
     @Before
     // not name it setUp, cause it overrides a JerseyTest method and things will go crash kaboem kapoetski
     public void setUpTest() {
-        // content was moved to beforeclass. 
+        // content was moved to beforeclass.
     }
 
     @Test
@@ -86,6 +86,17 @@ public class BookResourceTest extends JerseyTest {
         Book book = new Book("My new Book", "Some good author", "1234567890");
         Entity<Book> bookEntity = Entity.entity(book, MediaType.APPLICATION_JSON_TYPE);
         Response response = target("books").request().post(bookEntity);
+        assertEquals("Putting a book should return status ok", 200, response.getStatus());
+
+        Book returnedBook = response.readEntity(Book.class);
+        assertNotNull("Book should have an id when persisted", returnedBook.getId());
+    }
+
+    @Test
+    public void addBookAsynch() throws Exception {
+        Book book = new Book("My new Book", "Some good author", "0123456789");
+        Entity<Book> bookEntity = Entity.entity(book, MediaType.APPLICATION_JSON_TYPE);
+        Response response = target("books/async").request().post(bookEntity);
         assertEquals("Putting a book should return status ok", 200, response.getStatus());
 
         Book returnedBook = response.readEntity(Book.class);
