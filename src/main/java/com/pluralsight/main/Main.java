@@ -1,6 +1,9 @@
 package com.pluralsight.main;
 
+import com.pluralsight.repository.BookDao;
+import com.pluralsight.repository.BookDaoStubImpl;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -15,25 +18,23 @@ public class Main {
     // Base URI the Grizzly HTTP server will listen on
     public static final String BASE_URI = "http://localhost:8080/myapp/";
 
-    /**
-     * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
-     * @return Grizzly HTTP server.
-     */
     public static HttpServer startServer() {
-        // create a resource config that scans for JAX-RS resources and providers
-        // in com.pluralsight package
-        final ResourceConfig rc = new ResourceConfig().packages("com.pluralsight");
 
-        // create and start a new instance of grizzly http server
-        // exposing the Jersey application at BASE_URI
+        // for usaga of h2k instead of a static variable in the BookResource class
+        final BookDao bookDao = new BookDaoStubImpl();
+
+        final ResourceConfig rc = new ResourceConfig()
+                .packages("com.pluralsight")
+                .register(new AbstractBinder() {
+                    @Override
+                    protected void configure() {
+                        bind(bookDao).to(BookDao.class);
+                    }
+                });
+
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
 
-    /**
-     * Main method.
-     * @param args
-     * @throws IOException
-     */
     public static void main(String[] args) throws IOException {
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "

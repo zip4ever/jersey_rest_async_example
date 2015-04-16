@@ -1,9 +1,14 @@
 package com.pluralsight.resource;
 
 import com.pluralsight.domain.Book;
+import com.pluralsight.repository.BookDao;
+import com.pluralsight.repository.BookDaoStubImpl;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.core.Application;
@@ -19,12 +24,28 @@ import static junit.framework.Assert.assertNotNull;
  */
 public class BookResourceTest extends JerseyTest {
 
+    private static BookDao bookDao;
+
     protected Application configure() {
         // extra debug options can be enabled:
         // enable(TestProperties.LOG_TRAFFIC);
         // enable(TestProperties.RECORD_LOG_LEVEL);
         // enable(TestProperties.DUMP_ENTITY);
-        return new ResourceConfig().packages("com.pluralsight");
+
+        return new ResourceConfig()
+                .packages("com.pluralsight")
+                .register(new AbstractBinder() {
+                              @Override
+                              protected void configure() {
+                                bind(bookDao).to(BookDao.class);
+                              }
+                          }
+                );
+    }
+
+    @BeforeClass
+    public static void setUpClass() throws Exception{
+        bookDao = new BookDaoStubImpl();
     }
 
     @Test
