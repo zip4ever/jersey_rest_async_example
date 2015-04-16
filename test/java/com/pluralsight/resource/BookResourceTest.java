@@ -48,7 +48,7 @@ public class BookResourceTest extends JerseyTest {
     @Before
     // not name it setUp, cause it overrides a JerseyTest method and things will go crash kaboem kapoetski
     public void setUpTest() {
-
+        // content was moved to beforeclass. 
     }
 
     @Test
