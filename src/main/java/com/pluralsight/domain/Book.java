@@ -1,5 +1,8 @@
 package com.pluralsight.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
@@ -7,6 +10,10 @@ import java.util.Date;
  * Created by KDAAU95 on 16/04/2015.
  */
 @XmlRootElement
+// adding order for the elements
+@JsonPropertyOrder({"id", "author", "title", "isbn", "publishedDate"})
+// hide non null values from the resultco
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Book {
 
     private String id;
