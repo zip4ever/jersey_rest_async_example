@@ -15,14 +15,11 @@ public class Book {
     private String isbn;
     private Date publishedData;
 
-    private static long idCount = 0L;
-
     public Book() {
-        this.id = "" + idCount++;
+
     }
 
     public Book(String title, String author, String isbn) {
-        this.id = "" + idCount++;
         this.title = title;
         this.author = author;
         this.isbn = isbn;
@@ -31,7 +28,6 @@ public class Book {
     }
 
     public Book(String title, String author, String isbn, Date publishedData) {
-        this.id = "" + idCount++;
         this.title = title;
         this.author = author;
         this.isbn = isbn;

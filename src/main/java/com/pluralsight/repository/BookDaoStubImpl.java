@@ -16,6 +16,7 @@ public class BookDaoStubImpl implements BookDao {
         books = new HashMap<>();
         for(int i=0; i<10; i++) {
             Book book = new Book("Book " + i, "Author " + i, "1234" + i*10000 );
+            book.setId("" + i);
             books.put(book.getId(), book);
         }
     }
