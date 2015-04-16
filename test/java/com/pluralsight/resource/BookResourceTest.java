@@ -60,6 +60,14 @@ public class BookResourceTest extends JerseyTest {
     }
 
     @Test
+    public void testGetBooksAsync() throws Exception {
+        Collection<Book> response = target("books/async")
+                .request()
+                .get(new GenericType<Collection<Book>>(){});
+        assertNotNull("Must contain books", response.size());
+    }
+
+    @Test
     public void testGetBook() throws Exception {
         Book response = target("books")
                 .path("1")
