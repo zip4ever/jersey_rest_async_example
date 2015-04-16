@@ -29,6 +29,17 @@ public class BookDaoStubImpl implements BookDao {
         return books.values();
     }
 
+    public ListenableFuture<Collection<Book>> getBooksAsync() {
+        ListenableFuture<Collection<Book>> future =
+                service.submit(new Callable<Collection<Book>>() {
+                    @Override
+                    public Collection<Book> call() throws Exception {
+                        return getBooks();
+                    }
+                });
+        return future;
+    }
+
     public Book getBook(String id) {
         Book book = books.get(id);
         System.out.println("Requested book : " + book.toString());

@@ -32,6 +32,25 @@ public class BookResource {
         return bookDao.getBooks();
     }
 
+    @Path("/async/")
+    @GET
+    @ManagedAsync
+    @Produces(MediaType.APPLICATION_JSON)
+    public void getBooksAsync(@Suspended final AsyncResponse response) {
+        ListenableFuture<Collection<Book>> booksFuture = bookDao.getBooksAsync();
+        Futures.addCallback(booksFuture, new FutureCallback<Collection<Book>>() {
+            @Override
+            public void onSuccess(Collection<Book> books) {
+                response.resume(books);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                response.resume(throwable);
+            }
+        });
+    }
+
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
