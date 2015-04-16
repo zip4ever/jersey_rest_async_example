@@ -1,5 +1,8 @@
 package com.pluralsight.resource;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.pluralsight.domain.Book;
 import com.pluralsight.repository.BookDao;
 import com.pluralsight.repository.BookDaoStubImpl;
@@ -51,7 +54,18 @@ public class BookResource {
     @Path("/async")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void addBookAsynch(Book book, @Suspended AsyncResponse response) {
-        response.resume(bookDao.addBook(book));
+    public void addBookAsynch(Book book, @Suspended final AsyncResponse response) {
+        ListenableFuture<Book> bookFuture = bookDao.addBookAsynch(book);
+        Futures.addCallback(bookFuture, new FutureCallback<Book>() {
+            @Override
+            public void onSuccess(Book book) {
+                response.resume(book);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                response.resume(throwable);
+            }
+        });
     }
 }

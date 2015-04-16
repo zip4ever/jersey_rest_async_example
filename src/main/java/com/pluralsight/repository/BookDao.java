@@ -1,5 +1,6 @@
 package com.pluralsight.repository;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.pluralsight.domain.Book;
 
 import java.util.Collection;
@@ -14,4 +15,6 @@ public interface BookDao {
     public Book getBook(String id);
 
     Book addBook(Book book);
+
+    ListenableFuture<Book> addBookAsynch(final Book book);
 }
