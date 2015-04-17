@@ -7,6 +7,8 @@ import com.pluralsight.domain.Book;
 import com.pluralsight.repository.BookDao;
 import org.glassfish.jersey.server.ManagedAsync;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
@@ -88,7 +90,7 @@ public class BookResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Book addBook(Book book) {
+    public Book addBook(@Valid @NotNull Book book) {
         return bookDao.addBook(book);
     }
 
@@ -97,7 +99,7 @@ public class BookResource {
     @Path("/async")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void addBookAsynch(Book book, @Suspended final AsyncResponse response) {
+    public void addBookAsynch(@Valid @NotNull Book book, @Suspended final AsyncResponse response) {
         ListenableFuture<Book> bookFuture = bookDao.addBookAsync(book);
         Futures.addCallback(bookFuture, new FutureCallback<Book>() {
             @Override

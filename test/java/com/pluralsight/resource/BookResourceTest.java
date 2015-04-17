@@ -1,11 +1,14 @@
 package com.pluralsight.resource;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.jcabi.xml.XML;
 import com.jcabi.xml.XMLDocument;
 import com.pluralsight.domain.Book;
 import com.pluralsight.application.BookApplication;
 import com.pluralsight.repository.BookDao;
 import com.pluralsight.repository.BookDaoStubImpl;
+import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -24,6 +27,7 @@ import java.util.Objects;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Created by KDAAU95 on 16/04/2015.
@@ -40,6 +44,13 @@ public class BookResourceTest extends JerseyTest {
 
         // setup this way so you can easily pass another DAO for the test than the one one production
         return new BookApplication(bookDao);
+    }
+
+    // configure for JSON to leave out non blank files out of the payload
+    protected void configureClient(ClientConfig clientConfig) {
+        JacksonJsonProvider jacksonJsonProvider = new JacksonJsonProvider();
+        jacksonJsonProvider.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+        clientConfig.register(jacksonJsonProvider);
     }
 
     @BeforeClass
@@ -166,4 +177,39 @@ public class BookResourceTest extends JerseyTest {
 
         assertEquals("Author 0", xml.xpath("/books/book[@id='1']/author/text()").get(0));
     }
+
+    @Test
+    public void addBookNoAuthor() {
+        Response response = addBook(null, "Title", new Date(), "1234");
+        assertEquals(400, response.getStatus());
+
+        String message = response.readEntity(String.class);
+        assertTrue(message.contains("author"));
+    }
+
+    @Test
+         public void addBookNoTitle() {
+        Response response = addBook("An author", null, new Date(), "1234");
+        assertEquals(400, response.getStatus());
+
+        String message = response.readEntity(String.class);
+        assertTrue(message.contains("title"));
+    }
+
+    @Test
+    public void addBookNoAuthorAndTitle() {
+        Response response = addBook(null, null, new Date(), "1234");
+        assertEquals(400, response.getStatus());
+
+        String message = response.readEntity(String.class);
+        assertTrue(message.contains("title") && message.contains("author"));
+    }
+
+    @Test
+    public void addBookNoBook() {
+        Response response = target("books/async").request().post(null);
+        assertEquals(400, response.getStatus());
+    }
+
+
 }
