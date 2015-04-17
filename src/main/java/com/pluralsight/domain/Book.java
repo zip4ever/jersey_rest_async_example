@@ -1,6 +1,7 @@
 package com.pluralsight.domain;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
@@ -12,6 +13,7 @@ import java.util.HashMap;
 /**
  * Created by KDAAU95 on 16/04/2015.
  */
+@XmlRootElement
 @JacksonXmlRootElement(localName = "book")
 // adding order for the elements
 @JsonPropertyOrder({"id", "author", "title", "isbn", "publishedDate"})
@@ -91,7 +93,7 @@ public class Book {
     }
 
     public String toString() {
-        return "id=" + id + "\ttitle=" + title + "\tauthor=" + author + "\tisbn=" + isbn + "\tpublishedDate" + publishedData;
+        return "id=" + id + "\ttitle=" + title + "\tauthor=" + author + "\tisbn=" + isbn + "\tpublishedDate=" + publishedData;
     }
 
     @JsonAnyGetter

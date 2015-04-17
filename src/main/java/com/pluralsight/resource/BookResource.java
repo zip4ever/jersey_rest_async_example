@@ -29,6 +29,8 @@ public class BookResource {
     @GET
     // change MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML to Strings in order to add qs (weight)
     @Produces({"application/json;qs=1", "application/xml;qs=0.5"})
+
+    //todo this breaks when requesting : org.glassfish.jersey.server.internal.process.MappableException: com.fasterxml.jackson.databind.JsonMappingException
     public Collection<Book> getBooks() {
         return bookDao.getBooks();
     }
