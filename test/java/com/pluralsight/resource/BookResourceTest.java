@@ -8,7 +8,9 @@ import com.pluralsight.domain.Book;
 import com.pluralsight.application.BookApplication;
 import com.pluralsight.repository.BookDao;
 import com.pluralsight.repository.BookDaoStubImpl;
+import fj.Hash;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.grizzly.connector.GrizzlyConnectorProvider;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -48,6 +50,7 @@ public class BookResourceTest extends JerseyTest {
         JacksonJsonProvider jacksonJsonProvider = new JacksonJsonProvider();
         jacksonJsonProvider.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
         clientConfig.register(jacksonJsonProvider);
+        clientConfig.connectorProvider(new GrizzlyConnectorProvider());
     }
 
     @BeforeClass
@@ -226,6 +229,37 @@ public class BookResourceTest extends JerseyTest {
         Response response = target("books/async").path("1").request().header("If-None-Match",entityTag).get();
         assertEquals(304, response.getStatus());
     }
+
+    @Test
+    public void updateBookAuthor() {
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put("author", "Updated_author");
+        Entity<HashMap<String, Object>> updatedEntity = Entity.entity(updates, MediaType.APPLICATION_JSON_TYPE);
+        Response updateResponse = target("books/async").path("1").request().build("PATCH", updatedEntity).invoke();
+
+        assertEquals(200, updateResponse.getStatus());
+
+        Response getResponse = target("books").path("1").request().get();
+        HashMap<String, Object> getResponseMap = toHashMap(getResponse);
+
+        assertEquals(updates.get("author"), getResponseMap.get("author"));
+    }
+
+    @Test
+    public void updateBookExtra() {
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put("hello", "world");
+        Entity<HashMap<String, Object>> updatedEntity = Entity.entity(updates, MediaType.APPLICATION_JSON_TYPE);
+        Response updateResponse = target("books/async").path("1").request().build("PATCH", updatedEntity).invoke();
+
+        assertEquals(200, updateResponse.getStatus());
+
+        Response getResponse = target("books").path("1").request().get();
+        HashMap<String, Object> getResponseMap = toHashMap(getResponse);
+
+        assertEquals(updates.get("hello"), getResponseMap.get("hello"));
+    }
+
 
 
 }

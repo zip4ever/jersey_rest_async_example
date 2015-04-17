@@ -3,6 +3,7 @@ package com.pluralsight.resource;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.pluralsight.annotation.PATCH;
 import com.pluralsight.domain.Book;
 import com.pluralsight.exception.BookNotFoundException;
 import com.pluralsight.repository.BookDao;
@@ -84,7 +85,7 @@ public class BookResource {
                 // response.resume(book);
                 EntityTag entityTag = generateEntityTag(book);
                 Response.ResponseBuilder responseBuilder = request.evaluatePreconditions(entityTag);
-                if(responseBuilder != null) {
+                if (responseBuilder != null) {
                     response.resume(responseBuilder.build());
                 } else {
                     response.resume(Response.ok().tag(entityTag).entity(book).build());
@@ -124,6 +125,27 @@ public class BookResource {
             }
         });
     }
+
+    @Path("async/{id}")
+    @PATCH
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ManagedAsync
+    public void updateBook(@PathParam("id") String id, Book book, @Suspended final AsyncResponse response) {
+        ListenableFuture<Book> bookFuture = bookDao.updateBookAsync(id, book);
+        Futures.addCallback(bookFuture, new FutureCallback<Book>() {
+            @Override
+            public void onSuccess(Book book) {
+                response.resume(book);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                response.resume(throwable);
+            }
+        });
+    }
+
 
     EntityTag generateEntityTag(Book book) {
         return new EntityTag(DigestUtils.md5Hex(book.toString()));

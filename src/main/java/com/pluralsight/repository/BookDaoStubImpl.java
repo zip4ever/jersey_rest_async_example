@@ -79,4 +79,45 @@ public class BookDaoStubImpl implements BookDao {
         return future;
     }
 
+    public Book updateBook(String id, Book updates) throws BookNotFoundException {
+        if( !books.containsKey(id) ) {
+            throw new BookNotFoundException("Book with id " + id + " not found for update");
+        }
+        Book book = books.get(id);
+        updateBook(updates, book);
+        // should work bij ref, but just for readability add it to map
+        books.put(book.getId(), book);
+        return book;
+    }
+
+    private void updateBook(Book updates, Book book) {
+        if( updates.getTitle() != null ) {
+            book.setTitle( updates.getTitle() );
+        }
+        if( updates.getAuthor() != null ) {
+            book.setAuthor(updates.getAuthor());
+        }
+        if( updates.getIsbn() != null ) {
+            book.setIsbn(updates.getIsbn());
+        }
+        if( updates.getPublishedData() != null ) {
+            book.setPublishedData(updates.getPublishedData());
+        }
+        if( updates.getExtras() != null ) {
+            for( String key : updates.getExtras().keySet() ) {
+                book.set(key, updates.getExtras().get(key));
+            }
+        }
+    }
+
+    public ListenableFuture<Book> updateBookAsync(final String id, final Book book) {
+        ListenableFuture<Book> future =
+                service.submit(new Callable<Book>() {
+                    @Override
+                    public Book call() throws Exception {
+                        return updateBook(id, book);
+                    }
+                });
+        return future;
+    }
 }

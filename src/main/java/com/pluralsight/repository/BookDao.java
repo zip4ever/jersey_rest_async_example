@@ -22,4 +22,8 @@ public interface BookDao {
     Book addBook(Book book);
 
     ListenableFuture<Book> addBookAsync(final Book book);
+
+    Book updateBook(String id, Book updates) throws BookNotFoundException;
+
+    ListenableFuture<Book> updateBookAsync(final String id, final Book book);
 }
