@@ -15,10 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 
 import java.util.Collection;
 import java.util.Date;
@@ -219,6 +216,15 @@ public class BookResourceTest extends JerseyTest {
         String message = response.readEntity(String.class);
         assertTrue(message.contains("not found"));
 
+    }
+
+    @Test
+    public void BookEntityTagNotModified() {
+        EntityTag entityTag = target("books/async").path("1").request().get().getEntityTag();
+        assertNotNull(entityTag);
+
+        Response response = target("books/async").path("1").request().header("If-None-Match",entityTag).get();
+        assertEquals(304, response.getStatus());
     }
 
 

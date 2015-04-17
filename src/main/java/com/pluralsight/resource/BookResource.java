@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.pluralsight.domain.Book;
 import com.pluralsight.exception.BookNotFoundException;
 import com.pluralsight.repository.BookDao;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.glassfish.jersey.server.ManagedAsync;
 
 import javax.validation.Valid;
@@ -13,8 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.*;
 import java.util.Collection;
 
 /**
@@ -28,6 +28,9 @@ public class BookResource {
 
     @Context
     BookDao bookDao;
+
+    @Context
+    Request request;
 
     @GET
     // change MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML to Strings in order to add qs (weight)
@@ -78,7 +81,14 @@ public class BookResource {
         Futures.addCallback(bookFuture, new FutureCallback<Book>() {
             @Override
             public void onSuccess(Book book) {
-                response.resume(book);
+                // response.resume(book);
+                EntityTag entityTag = generateEntityTag(book);
+                Response.ResponseBuilder responseBuilder = request.evaluatePreconditions(entityTag);
+                if(responseBuilder != null) {
+                    response.resume(responseBuilder.build());
+                } else {
+                    response.resume(Response.ok().tag(entityTag).entity(book).build());
+                }
             }
 
             @Override
@@ -113,5 +123,9 @@ public class BookResource {
                 response.resume(throwable);
             }
         });
+    }
+
+    EntityTag generateEntityTag(Book book) {
+        return new EntityTag(DigestUtils.md5Hex(book.toString()));
     }
 }
