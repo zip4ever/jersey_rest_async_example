@@ -27,7 +27,7 @@ public class BookResource {
     BookDao bookDao;
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Collection<Book> getBooks() {
         return bookDao.getBooks();
     }
@@ -35,7 +35,7 @@ public class BookResource {
     @Path("/async/")
     @GET
     @ManagedAsync
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public void getBooksAsync(@Suspended final AsyncResponse response) {
         ListenableFuture<Collection<Book>> booksFuture = bookDao.getBooksAsync();
         Futures.addCallback(booksFuture, new FutureCallback<Collection<Book>>() {
@@ -53,7 +53,7 @@ public class BookResource {
 
     @Path("/{id}")
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Book getBook(@PathParam("id") String id) {
         System.out.println("getBook with id = " + id);
         return bookDao.getBook(id);
@@ -62,7 +62,7 @@ public class BookResource {
     @Path("/async/{id}")
     @GET
     @ManagedAsync
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public void getBookAsynch(@PathParam("id") String id, @Suspended final AsyncResponse response) {
         System.out.println("getBook with id = " + id);
         ListenableFuture<Book> bookFuture = bookDao.getBookAsync(id);
