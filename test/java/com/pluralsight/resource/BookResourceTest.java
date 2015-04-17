@@ -211,5 +211,15 @@ public class BookResourceTest extends JerseyTest {
         assertEquals(400, response.getStatus());
     }
 
+    @Test
+    public void bookNotFoundWithMessage() {
+        Response response = target("books").path("NOT_EX_123").request().get();
+        assertEquals(404, response.getStatus());
+
+        String message = response.readEntity(String.class);
+        assertTrue(message.contains("not found"));
+
+    }
+
 
 }

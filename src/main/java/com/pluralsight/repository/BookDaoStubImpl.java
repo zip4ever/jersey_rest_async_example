@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.pluralsight.domain.Book;
+import com.pluralsight.exception.BookNotFoundException;
 
 import java.util.Collection;
 import java.util.Map;
@@ -40,13 +41,17 @@ public class BookDaoStubImpl implements BookDao {
         return future;
     }
 
-    public Book getBook(String id) {
+    public Book getBook(String id) throws BookNotFoundException {
+        if( !books.containsKey(id) ) {
+            throw new BookNotFoundException("Book with id not found: " + id);
+        }
         Book book = books.get(id);
         System.out.println("Requested book : " + book.toString());
         return books.get(id);
     }
 
-    public ListenableFuture<Book> getBookAsync(final String id) {
+    // todo : how can we throw an exception here???
+    public ListenableFuture<Book> getBookAsync(final String id) throws BookNotFoundException {
        ListenableFuture<Book> future =
                service.submit(new Callable<Book>() {
                    @Override

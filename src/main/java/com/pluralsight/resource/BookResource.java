@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.pluralsight.domain.Book;
+import com.pluralsight.exception.BookNotFoundException;
 import com.pluralsight.repository.BookDao;
 import org.glassfish.jersey.server.ManagedAsync;
 
@@ -61,7 +62,7 @@ public class BookResource {
     @GET
     // change MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML to Strings in order to add qs (weight)
     @Produces({"application/json;qs=1", "application/xml;qs=0.5"})
-    public Book getBook(@PathParam("id") String id) {
+    public Book getBook(@PathParam("id") String id) throws BookNotFoundException {
         System.out.println("getBook with id = " + id);
         return bookDao.getBook(id);
     }
@@ -71,7 +72,7 @@ public class BookResource {
     @ManagedAsync
     // change MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML to Strings in order to add qs (weight)
     @Produces({"application/json;qs=1", "application/xml;qs=0.5"})
-    public void getBookAsynch(@PathParam("id") String id, @Suspended final AsyncResponse response) {
+    public void getBookAsynch(@PathParam("id") String id, @Suspended final AsyncResponse response) throws BookNotFoundException {
         System.out.println("getBook with id = " + id);
         ListenableFuture<Book> bookFuture = bookDao.getBookAsync(id);
         Futures.addCallback(bookFuture, new FutureCallback<Book>() {

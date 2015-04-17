@@ -2,6 +2,7 @@ package com.pluralsight.repository;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.pluralsight.domain.Book;
+import com.pluralsight.exception.BookNotFoundException;
 
 import java.util.Collection;
 
@@ -14,9 +15,9 @@ public interface BookDao {
 
     ListenableFuture<Collection<Book>> getBooksAsync();
 
-    public Book getBook(String id);
+    public Book getBook(String id) throws BookNotFoundException;
 
-    ListenableFuture<Book> getBookAsync(final String id);
+    ListenableFuture<Book> getBookAsync(final String id) throws BookNotFoundException;
 
     Book addBook(Book book);
 
