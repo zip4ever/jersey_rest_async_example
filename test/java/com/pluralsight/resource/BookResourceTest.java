@@ -1,5 +1,7 @@
 package com.pluralsight.resource;
 
+import com.jcabi.xml.XML;
+import com.jcabi.xml.XMLDocument;
 import com.pluralsight.domain.Book;
 import com.pluralsight.application.BookApplication;
 import com.pluralsight.repository.BookDao;
@@ -67,7 +69,8 @@ public class BookResourceTest extends JerseyTest {
 
     // convert a response to hashmap
     protected HashMap<String, Object> toHashMap(Response response) {
-        return response.readEntity(new GenericType<HashMap<String, Object>>(){});
+        return response.readEntity(new GenericType<HashMap<String, Object>>() {
+        });
     }
 
     @Before
@@ -94,10 +97,10 @@ public class BookResourceTest extends JerseyTest {
 
     @Test
     public void testGetBook() throws Exception {
-        HashMap<String, Object> response = toHashMap( target("books")
+        HashMap<String, Object> response = toHashMap(target("books")
                 .path("1")
                 .request()
-                .get() );
+                .get());
         assertNotNull("A book with id \"1\" must be found", response);
     }
 
@@ -154,5 +157,13 @@ public class BookResourceTest extends JerseyTest {
         HashMap<String, Object> book = toHashMap(response);
         assertNotNull(book.get("id"));
         assertEquals(book.get("extra1"), "Hello World");
+    }
+
+    @Test
+    public void getBooksAsXml() {
+        String output = target("books/async").request(MediaType.APPLICATION_XML_TYPE).get().readEntity(String.class);
+        XML xml = new XMLDocument(output);
+
+        assertEquals("Author 0", xml.xpath("/books/book[@id='1']/author/text()").get(0));
     }
 }
