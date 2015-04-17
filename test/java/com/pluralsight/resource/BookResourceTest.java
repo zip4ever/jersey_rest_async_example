@@ -65,6 +65,11 @@ public class BookResourceTest extends JerseyTest {
         return target("books/async").request().post(bookEntity);
     }
 
+    // convert a response to hashmap
+    protected HashMap<String, Object> toHashMap(Response response) {
+        return response.readEntity(new GenericType<HashMap<String, Object>>(){});
+    }
+
     @Before
     // not name it setUp, cause it overrides a JerseyTest method and things will go crash kaboem kapoetski
     public void setUpTest() {
@@ -73,49 +78,49 @@ public class BookResourceTest extends JerseyTest {
 
     @Test
     public void testGetBooks() throws Exception {
-        Collection<Book> response = target("books")
+        Collection<HashMap<String, Object>> response = target("books")
                 .request()
-                .get(new GenericType<Collection<Book>>(){});
+                .get(new GenericType<Collection<HashMap<String, Object>>>(){});
         assertNotNull("Must contain books", response.size());
     }
 
     @Test
     public void testGetBooksAsync() throws Exception {
-        Collection<Book> response = target("books/async")
+        Collection<HashMap<String, Object>> response = target("books/async")
                 .request()
-                .get(new GenericType<Collection<Book>>(){});
+                .get(new GenericType<Collection<HashMap<String, Object>>>(){});
         assertNotNull("Must contain books", response.size());
     }
 
     @Test
     public void testGetBook() throws Exception {
-        Book response = target("books")
+        HashMap<String, Object> response = toHashMap( target("books")
                 .path("1")
                 .request()
-                .get(Book.class);
+                .get() );
         assertNotNull("A book with id \"1\" must be found", response);
     }
 
     @Test
     public void testGetBookAsync() throws Exception {
-        Book response = target("books/async")
+        HashMap<String, Object> response = toHashMap( target("books/async")
                 .path("1")
                 .request()
-                .get(Book.class);
+                .get() );
         assertNotNull("A book with id \"1\" must be found", response);
     }
 
     @Test
     public void testSameBookRetrieved() throws Exception {
-        Book response1 = target("books")
+        HashMap<String, Object> response1 = toHashMap(target("books")
                 .path("1")
                 .request()
-                .get(Book.class);
-        Book response2 = target("books")
+                .get());
+        HashMap<String, Object> response2 = toHashMap(target("books")
                 .path("1")
                 .request()
-                .get(Book.class);
-        assertEquals("Books must have same publication date", response1.getPublishedData().getTime(), response2.getPublishedData().getTime());
+                .get());
+        assertEquals("Books must have same publication date", response1.get("publishedDate"), response2.get("publishedData"));
     }
 
     @Test
@@ -125,8 +130,8 @@ public class BookResourceTest extends JerseyTest {
         Response response = target("books").request().post(bookEntity);
         assertEquals("Putting a book should return status ok", 200, response.getStatus());
 
-        Book returnedBook = response.readEntity(Book.class);
-        assertNotNull("Book should have an id when persisted", returnedBook.getId());
+        HashMap<String, Object> returnedBook = toHashMap(response);
+        assertNotNull("Book should have an id when persisted", returnedBook.get("id"));
     }
 
     @Test
@@ -136,8 +141,8 @@ public class BookResourceTest extends JerseyTest {
         Response response = target("books/async").request().post(bookEntity);
         assertEquals("Putting a book should return status ok", 200, response.getStatus());
 
-        Book returnedBook = response.readEntity(Book.class);
-        assertNotNull("Book should have an id when persisted", returnedBook.getId());
+        HashMap<String, Object> returnedBook = toHashMap(response);
+        assertNotNull("Book should have an id when persisted", returnedBook.get("id"));
     }
 
     @Test
@@ -145,5 +150,9 @@ public class BookResourceTest extends JerseyTest {
         // see @JsonIgnoreProperties(ignoreUnknown = true) in Book to enforce acceptance !!!
         Response response = addBook("author", "title", new Date(), "1111", "Hello World");
         assertEquals(200, response.getStatus());
+
+        HashMap<String, Object> book = toHashMap(response);
+        assertNotNull(book.get("id"));
+        assertEquals(book.get("extra1"), "Hello World");
     }
 }
