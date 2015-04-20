@@ -190,7 +190,7 @@ public class BookResourceTest extends JerseyTest {
     }
 
     @Test
-         public void addBookNoTitle() {
+    public void addBookNoTitle() {
         Response response = addBook("An author", null, new Date(), "1234");
         assertEquals(400, response.getStatus());
 
@@ -260,6 +260,24 @@ public class BookResourceTest extends JerseyTest {
         HashMap<String, Object> getResponseMap = toHashMap(getResponse);
 
         assertEquals(updates.get("hello"), getResponseMap.get("hello"));
+    }
+
+    @Test
+    public void PatchMethodOverride() {
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put("author", "updatedAuthor");
+        Entity<HashMap<String, Object>> updatedEntity = Entity.entity(updates,MediaType.APPLICATION_JSON_TYPE);
+        Response updatedResponse = target("books/async")
+                .path("1")
+                .queryParam("_method", "PATCH")
+                .request()
+                .post(updatedEntity);
+        assertEquals(200, updatedResponse.getStatus());
+
+        Response getResponse = target("books/async").path("1").request().get();
+        HashMap<String, Object> getResponseMap = toHashMap(getResponse);
+
+        assertEquals("updatedAuthor", getResponseMap.get("author"));
     }
 
 

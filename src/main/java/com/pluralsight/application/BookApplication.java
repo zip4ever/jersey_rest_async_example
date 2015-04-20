@@ -7,6 +7,7 @@ import com.pluralsight.repository.BookDao;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
+import org.glassfish.jersey.server.filter.HttpMethodOverrideFilter;
 
 /**
  * Created by KDAAU95 on 16/04/2015.
@@ -35,5 +36,7 @@ public class BookApplication extends ResourceConfig{
 
         // make sure that validation responses are sent back to the client
         property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
+
+        register(HttpMethodOverrideFilter.class);
     }
 }
