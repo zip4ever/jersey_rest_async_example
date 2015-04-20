@@ -23,9 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  * Created by KDAAU95 on 16/04/2015.
@@ -293,6 +291,9 @@ public class BookResourceTest extends JerseyTest {
     public void testPoweredByHeader() {
         Response response = target("books/async").path("1").request().get();
         assertEquals("Pluralsight", response.getHeaderString("X-Powered-By"));
+
+        Response response2 = target("books/async").request().get();
+        assertNull(response2.getHeaderString("X-Powered-By"));
     }
 
 }

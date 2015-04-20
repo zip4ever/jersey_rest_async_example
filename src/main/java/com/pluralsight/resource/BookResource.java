@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.pluralsight.annotation.PATCH;
+import com.pluralsight.annotation.PoweredBy;
 import com.pluralsight.domain.Book;
 import com.pluralsight.exception.BookNotFoundException;
 import com.pluralsight.repository.BookDao;
@@ -74,6 +75,7 @@ public class BookResource {
     @Path("/async/{id}")
     @GET
     @ManagedAsync
+    @PoweredBy("Pluralsight")
     // change MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML to Strings in order to add qs (weight)
     @Produces({"application/json;qs=1", "application/xml;qs=0.5"})
     public void getBookAsynch(@PathParam("id") String id, @Suspended final AsyncResponse response) throws BookNotFoundException {
