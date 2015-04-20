@@ -263,7 +263,7 @@ public class BookResourceTest extends JerseyTest {
     }
 
     @Test
-    public void PatchMethodOverride() {
+    public void testPatchMethodOverride() {
         HashMap<String, Object> updates = new HashMap<>();
         updates.put("author", "updatedAuthor");
         Entity<HashMap<String, Object>> updatedEntity = Entity.entity(updates,MediaType.APPLICATION_JSON_TYPE);
@@ -281,12 +281,18 @@ public class BookResourceTest extends JerseyTest {
     }
 
     @Test
-    public void ContentNegotiationsExtensions() {
+    public void testContentNegotiationsExtensions() {
         Response xmlResponse = target("books/async").path("1.xml").request().get();
         assertEquals(MediaType.APPLICATION_XML, xmlResponse.getHeaderString("Content-Type"));
 
         Response jsonResponse = target("books/async").path("1.json").request().get();
         assertEquals(MediaType.APPLICATION_JSON, jsonResponse.getHeaderString("Content-Type"));
+    }
+
+    @Test
+    public void testPoweredByHeader() {
+        Response response = target("books/async").path("1").request().get();
+        assertEquals("Pluralsight", response.getHeaderString("X-Powered-By"));
     }
 
 }
