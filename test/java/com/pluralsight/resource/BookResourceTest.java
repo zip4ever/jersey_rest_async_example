@@ -280,6 +280,13 @@ public class BookResourceTest extends JerseyTest {
         assertEquals("updatedAuthor", getResponseMap.get("author"));
     }
 
+    @Test
+    public void ContentNegotiationsExtensions() {
+        Response xmlResponse = target("books/async").path("1.xml").request().get();
+        assertEquals(MediaType.APPLICATION_XML, xmlResponse.getHeaderString("Content-Type"));
 
+        Response jsonResponse = target("books/async").path("1.json").request().get();
+        assertEquals(MediaType.APPLICATION_JSON, jsonResponse.getHeaderString("Content-Type"));
+    }
 
 }
