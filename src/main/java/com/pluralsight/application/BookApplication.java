@@ -37,6 +37,7 @@ public class BookApplication extends ResourceConfig{
         // make sure that validation responses are sent back to the client
         property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
 
+        // added filter
         register(HttpMethodOverrideFilter.class);
     }
 }
